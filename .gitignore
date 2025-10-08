@@ -2,3 +2,6 @@ venv/
 IntroductionToDataCompression/
 *.raw
 images/
+__pycache__
+plugins/
+

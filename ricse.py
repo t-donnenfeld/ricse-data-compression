@@ -24,14 +24,13 @@ def compress_raw_with_jpeg(
     for path in (compressed_path, reconstructed_path):
         if os.path.exists(path):
             os.remove(path)
-    assert quality == int(quality) and 1 <= int(
-        quality) <= 100, f"Invalid {quality=}"
+    assert quality == int(quality) and 1 <= int(quality) <= 100, f"Invalid {quality=}"
 
     # This part can be moved to the the top of your scripts
     import enb
 
     enb.plugins.install("jpeg")
-    from ../../plugins/jpeg/jpeg_codecs import JPEG
+    from plugins.jpeg.jpeg_codecs import JPEG
 
     geometry_dict = enb.isets.file_path_to_geometry_dict(original_path)
 
