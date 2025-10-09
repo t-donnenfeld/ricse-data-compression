@@ -1,10 +1,19 @@
+from typing import Literal
 import ricse
 from collections import Counter
 
 
 class RawImage:
     def __init__(
-        self, path, width, height, channel_nbr, data_type="u8be", ordering="BSQ"
+        self,
+        path,
+        width,
+        height,
+        channel_nbr,
+        sample_size=1,
+        signed=False,
+        endianness="big",
+        ordering="BSQ",
     ) -> None:
         self.width = width
         self.path = path
@@ -12,8 +21,10 @@ class RawImage:
             self.data = bytearray(f.read())
         self.height = height
         self.channel_nbr = channel_nbr
-        self.data_type = data_type
         self.ordering = ordering
+        self.sample_size = sample_size  # In bytes
+        self.endianness = endianness
+        self.signed = signed
 
     def set_value(self, x, y, channel, value):
         if self.ordering == "BSQ":
@@ -33,21 +44,52 @@ class RawImage:
         else:
             return self.get_value_bip(x, y, channel)
 
+    def set_int_at_offset(self, offset, value):
+        if self.endianness == "big":
+            new_bytes = value.to_bytes(
+                self.sample_size, byteorder="big", signed=self.signed
+            )
+        else:
+            new_bytes = value.to_bytes(
+                self.sample_size, byteorder="little", signed=self.signed
+            )
+        for i in range(self.sample_size):
+            print(offset, value)
+            self.data[offset + i] = new_bytes[i]
+
+    def get_int_at_offset(self, offset):
+        bytes = self.data[offset : offset + self.sample_size]
+        if self.endianness == "big":
+            return int.from_bytes(bytes, byteorder="big", signed=self.signed)
+        else:
+            return int.from_bytes(bytes, byteorder="little", signed=self.signed)
+
     def set_value_bsq(self, x, y, channel, value):
-        offset = (y * self.width + x) + channel * self.width * self.height
-        self.data[offset] = value
+        print(x, y, channel)
+        offset = (y * self.width + x) + (channel - 1) * self.width * self.height
+        print(offset)
+        offset = offset * self.sample_size
+        print(offset)
+        self.set_int_at_offset(offset, value)
 
     def get_value_bsq(self, x, y, channel):
-        offset = (y * self.width + x) + channel * self.width * self.height
-        return self.data[offset]
+        offset = (y * self.width + x) + (channel - 1) * self.width * self.height
+        offset = offset * self.sample_size
+        return self.get_int_at_offset(offset)
 
     def set_value_bip(self, x, y, channel, value):
-        offset = y * self.width * self.channel_nbr + x * self.channel_nbr * channel
-        self.data[offset] = value
+        offset = y * self.width * self.channel_nbr + x * self.channel_nbr * (
+            channel - 1
+        )
+        offset = offset * self.sample_size
+        self.set_int_at_offset(offset, value)
 
     def get_value_bip(self, x, y, channel):
-        offset = y * self.width * self.channel_nbr + x * self.channel_nbr * channel
-        return self.data[offset]
+        offset = y * self.width * self.channel_nbr + x * self.channel_nbr * (
+            channel - 1
+        )
+        offset = offset * self.sample_size
+        return self.get_int_at_offset(offset)
 
     def get_pixel(self, x, y):
         return [self.get_value(x, y, i) for i in range(self.channel_nbr)]
@@ -60,6 +102,30 @@ class RawImage:
                     new.append(pixel_component)
         self.data = new
         self.ordering = "BIP"
+
+    def to_higher_sample_size(
+        self, new_sample_size, byteorder: Literal["little", "big"]
+    ):
+        if new_sample_size < self.sample_size:
+            print("New sample size lower than previous. Aborting")
+            return
+        if new_sample_size == self.sample_size:
+            print("No changes. Aborting")
+            return
+        new = bytearray()
+        step = 2 ** (8 * (new_sample_size - self.sample_size))
+        print(step)
+        # ONLY WORKS FOR BSQ ATM
+        for channel in range(self.channel_nbr):
+            for y in range(self.height):
+                for x in range(self.width):
+                    int_value = step * self.get_value(x, y, channel)
+                    for byte in int_value.to_bytes(
+                        new_sample_size, byteorder, signed=self.signed
+                    ):
+                        new.append(byte)
+        self.sample_size = new_sample_size
+        self.data = new
 
     def count_true_bits(self):
         sum = 0
