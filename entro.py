@@ -1,14 +1,8 @@
-import math
+import numpy as np
 
 
-def histogram_dict_to_unordered_probabilities(histogram: dict):
-    total = sum(histogram.values())
-    return [x / total for x in histogram.values()]
-
-
-def get_self_information_in_bits(probability: float):
-    return -1 * math.log2(probability)
-
-
-def get_entropy(probabilities: list[float]):
-    return sum([x * get_self_information_in_bits(x) for x in probabilities])
+def get_entropy_from_array(arr: np.ndarray) -> float:
+    _, counts = np.unique(arr, return_counts=True)
+    probabilities = counts / counts.sum()
+    entropy = -np.sum(probabilities * np.log2(probabilities))
+    return float(entropy)
