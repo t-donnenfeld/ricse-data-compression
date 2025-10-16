@@ -44,7 +44,7 @@ def generate_huffman_codes(
     return codes
 
 
-def huffman_from_array(arr: np.ndarray) -> Tuple[Dict[Any, str], float]:
+def huffman_code_from_array(arr: np.ndarray) -> Tuple[Dict[Any, str], float]:
     values, counts = np.unique(arr, return_counts=True)
     freqs = dict(zip(values.tolist(), counts.tolist()))
     total = counts.sum()
@@ -52,3 +52,10 @@ def huffman_from_array(arr: np.ndarray) -> Tuple[Dict[Any, str], float]:
     codes = generate_huffman_codes(root)
     avg_length = sum((len(codes[v]) * (freqs[v] / total)) for v in values)
     return codes, avg_length
+
+def average_huffman_symbol_length_from_array(arr: np.ndarray) -> float:
+    _, avg_length = huffman_code_from_array(arr)
+    return avg_length
+
+
+

@@ -1,6 +1,7 @@
-import image
 import entro
-import numpy as np
+import huffman
+import image
+import pyac.pyac as pyac
 
 
 def exam_question_b():
@@ -46,8 +47,14 @@ def exam_question_e():
     print(f"Entropy diff 8-bit -> 16-bit LE: {H8 - Hle} bits")
     print(f"Entropy diff 8-bit -> 16-bit BE: {H8 - Hbe} bits")
 
+    hc = huffman.huffman_code_from_array(flower_8.data)
+
+    print(hc)
+
 
 if __name__ == "__main__":
-    exam_question_b()
-    exam_question_d()
-    exam_question_e()
+    # exam_question_b()
+    # exam_question_d()
+    # exam_question_e()
+    enc = pyac.ArithmeticEncoder("./out.bin", [0.25, 0.5, 0.25]).code_symbol(1)
+
