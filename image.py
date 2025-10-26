@@ -1,8 +1,10 @@
-import ricse
 from collections import Counter
+from typing import Literal, Union
+
 import numpy as np
 from numpy.typing import NDArray
-from typing import Literal, Union
+
+import ricse
 
 
 class RawImage:
@@ -126,3 +128,19 @@ class RawImage:
         data_bytes = self.data.astype(self.dtype).tobytes(order="C")
         combined = header + data_bytes
         self._with_header = combined
+
+    def get_bitplane_component(
+            self,
+            bit: int,
+    ) -> NDArray[np.uint8]:
+        arr = self.data
+        return ((arr >> bit) & 1).astype(np.uint8)
+
+    def write_black_and_white_bitplane_component(
+            self,
+            bit: int,
+            path: str,
+    ) -> None:
+        arr = self.get_bitplane_component(bit)
+        arr = arr * 0xFF
+        arr.tofile(path)

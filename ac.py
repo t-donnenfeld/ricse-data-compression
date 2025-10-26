@@ -1,4 +1,5 @@
 import numpy as np
+from decimal import *
 
 symbols = np.array([0, 1, 2, 3])
 probs = np.array([0.322043, 0.318395, 0.24544, 0.114122])
@@ -7,12 +8,15 @@ def arithmetic_encode(sequence, probs):
     low, high = 0.0, 1.0
     cum_high = np.cumsum(probs)
     cum_low = np.concatenate(([0.0], cum_high[:-1]))
-
+    counter = 0
     for s in sequence:
         rng = high - low
         high = low + rng * cum_high[s]
         low = low + rng * cum_low[s]
-        print(f"Encoded {s}: [{low:.9f}, {high:.9f}]")
+        if high - low > 0:
+            print(f"Interval size {high - low} at {counter}")
+        counter += 1
+
     return (low + high) / 2 # arbitrary
 
 
@@ -33,13 +37,3 @@ def arithmetic_decode(code_value, probs, length):
         low = low + rng * cum_low[s]
 
     return result
-
-
-sequence = [3, 3, 2]
-print("Encoding sequence:", sequence)
-
-code_value = arithmetic_encode(sequence, probs)
-print(f"\nFinal code value: {code_value:.12f}")
-
-decoded = arithmetic_decode(code_value, probs, len(sequence))
-print("\nDecoded sequence:", decoded)
