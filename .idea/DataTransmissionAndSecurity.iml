@@ -4,10 +4,11 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/IntroductionToDataCompression" />
+      <excludeFolder url="file://$MODULE_DIR$/images" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.13 (DataTransmissionAndSecurity) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="reference-AC" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />

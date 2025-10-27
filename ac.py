@@ -1,8 +1,4 @@
 import numpy as np
-from decimal import *
-
-symbols = np.array([0, 1, 2, 3])
-probs = np.array([0.322043, 0.318395, 0.24544, 0.114122])
 
 def arithmetic_encode(sequence, probs):
     low, high = 0.0, 1.0

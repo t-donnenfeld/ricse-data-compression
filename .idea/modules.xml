@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/DataTransmissionAndSecurity.iml" filepath="$PROJECT_DIR$/.idea/DataTransmissionAndSecurity.iml" />
-      <module fileurl="file://$PROJECT_DIR$/reference-AC/.idea/reference-AC.iml" filepath="$PROJECT_DIR$/reference-AC/.idea/reference-AC.iml" />
     </modules>
   </component>
 </project>
