@@ -79,8 +79,6 @@ def old():
 
 if __name__ == "__main__":
     geo = image.RawImage("./data/Geo_Sample-u16be-242x1024x256.raw", 1024, 256, 242, sample_size=2)
-    geo.data
-    3264
     print(entro.get_entropy_from_array(geo.data))
 
 

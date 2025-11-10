@@ -1,5 +1,15 @@
 import numpy as np
 
+def array_encode(to_encode):
+    _, counts = np.unique(to_encode, return_counts=True)
+    probabilities = counts / counts.sum()
+    return arithmetic_encode(to_encode, probabilities)
+
+def array_decode(encoded, probabilities, length):
+    _, counts = np.unique(encoded, return_counts=True)
+    probabilities = counts / counts.sum()
+    return arithmetic_decode(encoded, probabilities, length)
+
 def arithmetic_encode(sequence, probs):
     low, high = 0.0, 1.0
     cum_high = np.cumsum(probs)

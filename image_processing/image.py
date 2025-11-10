@@ -4,7 +4,8 @@ from typing import Literal, Union
 import numpy as np
 from numpy.typing import NDArray
 
-import ricse
+from entropy_coders import ricse
+from .quant import quantize_midrise_mid
 
 
 class RawImage:
@@ -52,6 +53,25 @@ class RawImage:
         else:
             self.data = np.zeros((height, width))
             raise NotImplementedError("BIL ordering not yet supported")
+
+    def __copy__(self):
+        cls = self.__class__
+        new = cls.__new__(cls)
+
+        new.path = self.path
+        new.width = self.width
+        new.height = self.height
+        new.channel_nbr = self.channel_nbr
+        new.sample_size = self.sample_size
+        new.signed = self.signed
+        new.endianness = self.endianness
+        new.ordering = self.ordering
+        new.dtype = self.dtype
+
+        # depp copy to avoid sharing data
+        new.data = self.data.copy()
+
+        return new
 
     def get_value(self, x, y, channel):
         if self.ordering == "BSQ":
@@ -133,7 +153,7 @@ class RawImage:
             self,
             bit: int,
     ) -> NDArray[np.uint8]:
-        arr = self.data
+        arr = self.data.astype(np.uint8)
         return ((arr >> bit) & 1).astype(np.uint8)
 
     def write_black_and_white_bitplane_component(
@@ -144,3 +164,8 @@ class RawImage:
         arr = self.get_bitplane_component(bit)
         arr = arr * 0xFF
         arr.tofile(path)
+
+    def get_copy_quantized(self, step):
+        new = self.__copy__()
+        new.data = quantize_midrise_mid(self.data, step)
+        return new
