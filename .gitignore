@@ -1,6 +1,7 @@
 venv/
 pyac/
 reference-AC
+data/
 IntroductionToDataCompression/
 *.raw
 images/
